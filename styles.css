@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eef2ff;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px 0;
+}
+
+/* CARDS */
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.header-card h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.header-card p {
+    color: #555;
+    margin-top: 5px;
+}
+
+/* FLEX ROW */
+.flex-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* STAT BOXES */
+.stats-row {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.stat-box {
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.purple { background: #6d28d9; }
+.green { background: #10b981; }
+.blue  { background: #2563eb; }
+
+/* METRIC CARDS */
+.metric-card h3 {
+    margin: 0 0 10px;
+    color: #444;
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1e3a8a;
+}
+
+.metric-change {
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.positive { color: #059669; }
+.negative { color: #dc2626; }
+
+.metric-sub {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #555;
+}
+
+/* CATEGORICAL BOX */
+.cat-box {
+    flex: 1;
+    background: #f1f5f9;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* PLACEHOLDER */
+.placeholder {
+    padding: 40px;
+    background: #f3f4f6;
+    border-radius: 10px;
+    text-align: center;
+    font-style: italic;
+    color: #6b7280;
+}
