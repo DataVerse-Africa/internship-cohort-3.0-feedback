@@ -23,6 +23,7 @@ body h1{
     padding: 0 auto;
     justify-content: space-between;
     flex-wrap: wrap;
+    margin-bottom: 10px;
     
 }
 
