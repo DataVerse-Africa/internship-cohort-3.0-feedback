@@ -3,826 +3,1014 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Analytics Track - New Cohort Analysis</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Chart.js for charting -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <title>Data Science Track Cohort 3.0 Performance Analysis Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Custom styles for better chart contrast */
-        body {
-            font-family: 'Inter', sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to bottom right, #dbeafe, #e0e7ff);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+
+        h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .badge-indigo { background: #eef2ff; color: #4f46e5; }
+        .badge-green { background: #f0fdf4; color: #16a34a; }
+        .badge-purple { background: #faf5ff; color: #9333ea; }
+        .badge-amber { background: #fef3c7; color: #d97706; }
+
+        .tabs {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: capitalize;
+            border: none;
+            background: none;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: #111827;
+        }
+
+        .tab-btn.active {
+            color: #4f46e5;
+            border-bottom-color: #4f46e5;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .metrics-grid {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .metric-card h3 {
+            color: #6b7280;
+        }
+
+        .metric-value {
+            font-size: 30px;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .metric-change {
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .text-indigo { color: #4f46e5; }
+        .text-blue { color: #2563eb; }
+        .text-purple { color: #9333ea; }
+        .text-green { color: #16a34a; }
+        .text-gray { color: #6b7280; }
+
         .chart-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-wrapper {
             position: relative;
             height: 350px;
-            width: 100%;
+            margin-top: 16px;
         }
+
+        table {
+            width: 100%;
+            font-size: 14px;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f9fafb;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        th.text-center {
+            text-align: center;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        td.text-center {
+            text-align: center;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .overflow-x-auto {
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .summary-card {
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .summary-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .summary-card-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .summary-card-subtitle {
+            font-size: 12px;
+        }
+
+        .bg-blue { background: #dbeafe; }
+        .bg-blue .summary-card-title { color: #2563eb; }
+        .bg-blue .summary-card-value { color: #1e3a8a; }
+        .bg-blue .summary-card-subtitle { color: #2563eb; }
+
+        .bg-indigo { background: #e0e7ff; }
+        .bg-indigo .summary-card-title { color: #4f46e5; }
+        .bg-indigo .summary-card-value { color: #312e81; }
+        .bg-indigo .summary-card-subtitle { color: #4f46e5; }
+
+        .bg-purple { background: #f3e8ff; }
+        .bg-purple .summary-card-title { color: #9333ea; }
+        .bg-purple .summary-card-value { color: #581c87; }
+        .bg-purple .summary-card-subtitle { color: #9333ea; }
+
+        .two-column-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .feedback-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .feedback-item {
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .feedback-item-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .feedback-item-text {
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .bg-red-50 { background: #fef2f2; border-left: 4px solid #ef4444; }
+        .bg-green-50 { background: #f0fdf4; border-left: 4px solid #22c55e; }
+        .bg-blue-50 { background: #eff6ff; border-left: 4px solid #3b82f6; }
+
+        .title-red { color: #7f1d1d; }
+        .title-green { color: #14532d; }
+        .title-blue { color: #1e3a8a; }
+        .title-indigo { color: #312e81; }
+
+        .insights-card {
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .insights-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .insights-list {
+            padding-left: 20px;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .insights-list li {
+            margin-bottom: 4px;
+        }
+
+        .bg-green-insight { background: #f0fdf4; }
+        .bg-green-insight .insights-title { color: #14532d; }
+
+        .bg-amber-insight { background: #fef3c7; }
+        .bg-amber-insight .insights-title { color: #78350f; }
+
+        .bg-blue-insight { background: #eff6ff; }
+        .bg-blue-insight .insights-title { color: #1e3a8a; }
+
+        .cta-section {
+            background: linear-gradient(to right, #4f46e5, #9333ea);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            text-align: center;
+            color: white;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .cta-section p {
+            color: #c7d2fe;
+            margin-bottom: 24px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-white {
+            background: white;
+            color: #4f46e5;
+        }
+
+        .btn-white:hover {
+            background: #eef2ff;
+        }
+
+        .btn-indigo {
+            background: #4338ca;
+            color: white;
+        }
+
+        .btn-indigo:hover {
+            background: #3730a3;
+        }
+
+        .project-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-green-bg { background: #d1fae5; color: #065f46; }
+        .badge-blue-bg { background: #dbeafe; color: #1e40af; }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .card h1 a{
+            color: blue;
+            text-decoration: none;
+        }
+
+        .card h1 a:hover{
+            color: rgb(81, 17, 17)
+        }
+
+        .status-yes { background: #d1fae5; color: #065f46; }
+        .status-no { background: #f3f4f6; color: #374151; }
+        .status-excellent { background: #d1fae5; color: #065f46; }
+        .status-good { background: #dbeafe; color: #1e40af; }
     </style>
 </head>
-<body class="bg-gray-50">
-
-<div id="app" class="min-h-screen p-4 sm:p-6">
-    <div class="max-w-7xl mx-auto">
+<body>
+    <div class="container">
         <!-- Header -->
-        <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 mb-6 border-t-4 border-indigo-500">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                New Data Cohort Analysis - Report
-            </h1>
-            <p class="text-gray-600 mb-4">
-                Assessment Report based on Extracted Data - November 2025
-            </p>
-            <div id="header-stats" class="flex flex-wrap gap-3">
-                <!-- Metrics will be inserted here by JS -->
+        <div class="card">
+            <h1>Data Science Track  | <a href="index.html">Home</a>   |  <a href="DataAnalyticsTrack.html">Data Analytics Track</a></h1>
+            <p>Comprehensive Assessment Report for the Past 6 week October - November 2025 </p>
+            <div class="badge-container">
+                <div class="badge badge-indigo">Total Participants: <span id="totalParticipants">6</span></div>
+                <div class="badge badge-green">Avg Projects: <span id="avgProjects">2.33</span></div>
+                <div class="badge badge-purple">High Performers: <span id="highPerformers">2</span></div>
+                <div class="badge badge-amber">Avg Confidence: <span id="avgConfidence">7.17</span>/10</div>
             </div>
         </div>
 
         <!-- Tabs -->
-        <div class="bg-white rounded-xl shadow-lg mb-6">
-            <div id="tabs-container" class="flex border-b overflow-x-auto">
-                <button data-tab="overview" class="tab-button px-4 py-3 sm:px-6 font-semibold capitalize transition-colors whitespace-nowrap border-b-2 border-indigo-600 text-indigo-600">
-                    Overview
-                </button>
-                <button data-tab="numerical" class="tab-button px-4 py-3 sm:px-6 font-semibold capitalize transition-colors whitespace-nowrap text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-200">
-                    Numerical
-                </button>
-                <button data-tab="categorical" class="tab-button px-4 py-3 sm:px-6 font-semibold capitalize transition-colors whitespace-nowrap text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-200">
-                    Categorical
-                </button>
-                <button data-tab="feedback" class="tab-button px-4 py-3 sm:px-6 font-semibold capitalize transition-colors whitespace-nowrap text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-200">
-                    Feedback
-                </button>
+        <div class="tabs">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+                <button class="tab-btn" onclick="switchTab('numerical')">Numerical</button>
+                <button class="tab-btn" onclick="switchTab('categorical')">Categorical</button>
+                <button class="tab-btn" onclick="switchTab('feedback')">Feedback</button>
             </div>
         </div>
 
-        <!-- Content Area -->
-        <div id="content-area">
-            <!-- Overview Tab Content -->
-            <div id="overview" data-tab-content class="space-y-6">
-                <!-- Key Metrics Grid -->
-                <div id="key-metrics" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <!-- Cards will be inserted here by JS -->
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Excel Proficiency</h3>
+                    <div class="metric-value text-indigo" id="excelAfter">8.17</div>
+                    <div class="metric-change text-green">+17.9% change</div>
                 </div>
-                <!-- Skills Comparison Chart -->
-                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">All Skills: Before vs After</h2>
-                    <div class="chart-container">
-                        <canvas id="skillComparisonChart"></canvas>
+                <div class="metric-card">
+                    <h3>SQL Proficiency</h3>
+                    <div class="metric-value text-blue" id="sqlAfter">7.17</div>
+                    <div class="metric-change text-green">+55.4% change</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Power BI</h3>
+                    <div class="metric-value text-purple" id="pbiAfter">7.83</div>
+                    <div class="metric-change text-green">+41.8% change</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Mentor Rating</h3>
+                    <div class="metric-value text-green" id="mentorRating">8.17</div>
+                    <div class="metric-change text-gray">Program satisfaction</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h2>Skills: Before vs After</h2>
+                <div class="chart-wrapper">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h2>Skill Improvement Percentage</h2>
+                <div class="chart-wrapper" style="height: 300px;">
+                    <canvas id="improvementChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Numerical Tab -->
+        <div id="numerical" class="tab-content">
+            <div class="chart-container">
+                <h2>Individual Skill Progression</h2>
+                <div class="overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Participant</th>
+                                <th class="text-center">Excel</th>
+                                <th class="text-center">SQL</th>
+                                <th class="text-center">Power BI</th>
+                                <th class="text-center">Analysis</th>
+                                <th class="text-center">Comm</th>
+                                <th class="text-center">Projects</th>
+                            </tr>
+                        </thead>
+                        <tbody id="numericalTable">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-card bg-blue">
+                        <div class="summary-card-title">Excel Growth</div>
+                        <div class="summary-card-value">17.9%</div>
+                        <div class="summary-card-subtitle">6.92 → 8.17</div>
+                    </div>
+                    <div class="summary-card bg-indigo">
+                        <div class="summary-card-title">SQL Growth</div>
+                        <div class="summary-card-value">55.4%</div>
+                        <div class="summary-card-subtitle">4.50 → 7.17</div>
+                    </div>
+                    <div class="summary-card bg-purple">
+                        <div class="summary-card-title">Power BI Growth</div>
+                        <div class="summary-card-value">41.8%</div>
+                        <div class="summary-card-subtitle">5.50 → 7.83</div>
                     </div>
                 </div>
-                <!-- Improvement Chart -->
-                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">Skill Improvement Percentage</h2>
-                    <div class="chart-container h-80">
-                        <canvas id="improvementChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Categorical Tab -->
+        <div id="categorical" class="tab-content">
+            <div class="two-column-grid">
+                <div class="chart-container">
+                    <h2>SunFi Participation</h2>
+                    <div class="chart-wrapper" style="height: 250px;">
+                        <canvas id="sunfiChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h2>Project Quality</h2>
+                    <div class="chart-wrapper" style="height: 250px;">
+                        <canvas id="qualityChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Numerical Tab Content -->
-            <div id="numerical" data-tab-content class="hidden space-y-6">
-                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">Detailed Numerical Analysis</h2>
-                    
-                    <!-- Skills Table -->
-                    <div class="overflow-x-auto mb-8">
-                        <h3 class="font-semibold text-gray-800 mb-3">Individual Skill Progression (B→A)</h3>
-                        <table id="skills-table" class="w-full text-sm text-left border-collapse rounded-lg overflow-hidden">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="px-4 py-3 font-semibold text-gray-700">Intern</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Data Prep</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Analysis</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Visualization</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">P. Solving</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Comm</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Projects</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Confidence</th>
-                                </tr>
-                            </thead>
-                            <tbody id="skills-table-body" class="divide-y divide-gray-200">
-                                <!-- Rows inserted here by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Summary Statistics -->
-                    <h3 class="font-semibold text-gray-800 mb-3">Average Skill Growth Summary</h3>
-                    <div id="summary-stats-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <!-- Summary cards inserted here by JS -->
-                    </div>
+            <div class="chart-container">
+                <h2>Slack Engagement</h2>
+                <div class="chart-wrapper" style="height: 300px;">
+                    <canvas id="slackChart"></canvas>
                 </div>
             </div>
 
-            <!-- Categorical Tab Content -->
-            <div id="categorical" data-tab-content class="hidden space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Project Value Perception Pie Chart (Replaced SunFi) -->
-                    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 flex flex-col items-center col-span-1 md:col-span-2">
-                        <h2 class="text-xl font-bold text-gray-900 mb-4">Project Value Perception Distribution</h2>
-                        <div class="chart-container h-64 w-full flex justify-center items-center">
-                            <canvas id="qualityPieChart" class="max-w-xs"></canvas>
-                        </div>
-                    </div>
+            <div class="chart-container">
+                <h2>Assignment Submission</h2>
+                <div class="chart-wrapper" style="height: 300px;">
+                    <canvas id="assignmentChart"></canvas>
                 </div>
-
-                <!-- Slack Engagement Bar Chart -->
-                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">Slack Engagement Levels</h2>
-                    <div class="chart-container h-80">
-                        <canvas id="slackBarChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Assignment Submission Bar Chart -->
-                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">Assignment Submission Rates</h2>
-                    <div class="chart-container h-80">
-                        <canvas id="assignmentBarChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Categorical Summary Table -->
-                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">Complete Categorical Breakdown</h2>
-                    <div class="overflow-x-auto">
-                        <table id="categorical-table" class="w-full text-sm text-left border-collapse rounded-lg overflow-hidden">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Intern Name</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Value Perception</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Slack</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Assignments</th>
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Mentor Rating</th>
-                                </tr>
-                            </thead>
-                            <tbody id="categorical-table-body" class="divide-y divide-gray-200">
-                                <!-- Rows inserted here by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- Feedback Tab Content -->
-            <div id="feedback" data-tab-content class="hidden space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-xl shadow-lg p-6 md:col-span-1">
-                        <h2 class="text-xl font-bold text-red-600 mb-4">Challenges</h2>
-                        <ul id="challenges-list" class="list-none space-y-3"></ul>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-lg p-6 md:col-span-1">
-                        <h2 class="text-xl font-bold text-green-600 mb-4">Achievements</h2>
-                        <ul id="achievements-list" class="list-none space-y-3"></ul>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-lg p-6 md:col-span-1">
-                        <h2 class="text-xl font-bold text-indigo-600 mb-4">General Comments</h2>
-                        <ul id="comments-list" class="list-none space-y-3"></ul>
-                    </div>
+            <div class="chart-container">
+                <h2>Complete Breakdown</h2>
+                <div class="overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Participant</th>
+                                <th class="text-center">SunFi</th>
+                                <th class="text-center">Quality</th>
+                                <th class="text-center">Slack</th>
+                                <th class="text-center">Assignments</th>
+                                <th class="text-center">Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoricalTable">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- Feedback Tab -->
+        <div id="feedback" class="tab-content">
+            <div class="feedback-section">
+                <h2 class="title-red">🚧 Challenges</h2>
+                <div id="challengesList">
+                    <!-- Data will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="feedback-section">
+                <h2 class="title-green">🏆 Achievements</h2>
+                <div id="achievementsList">
+                    <!-- Data will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="feedback-section">
+                <h2 class="title-blue">💬 Comments</h2>
+                <div id="commentsList">
+                    <!-- Data will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="feedback-section">
+                <h2 class="title-indigo">💡 Key Insights</h2>
+                <div class="insights-card bg-green-insight">
+                    <div class="insights-title">✅ Strengths</div>
+                    <ul class="insights-list">
+                        <li>Average skill improvement of 38.4%</li>
+                        <li>2 high performers completing 3+ projects</li>
+                        <li>Average mentor rating of 8.17/10</li>
+                        <li>4 participants engaged in SunFi project</li>
+                    </ul>
+                </div>
+
+                <div class="insights-card bg-amber-insight">
+                    <div class="insights-title">📊 Observations</div>
+                    <ul class="insights-list">
+                        <li>Excel improvement: 17.9%</li>
+                        <li>SQL improvement: 55.4%</li>
+                        <li>Power BI improvement: 41.8%</li>
+                        <li>Analysis improvement: 36.4%</li>
+                        <li>Communication improvement: 34.1%</li>
+                    </ul>
+                </div>
+
+                <div class="insights-card bg-blue-insight">
+                    <div class="insights-title">🎯 Recommendations</div>
+                    <ol class="insights-list">
+                        <li>Continue emphasizing hands-on project work</li>
+                        <li>Provide additional support for SQL and Power BI mastery</li>
+                        <li>Implement peer mentoring programs</li>
+                        <li>Schedule more live sessions for real-time feedback</li>
+                        <li>Create catch-up resources for participants who need them</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>📊 Analysis Complete</h2>
+            <p>Comprehensive analysis of 6 participants with complete numerical, categorical, and qualitative feedback.</p>
+            <div class="btn-group">
+                <button class="btn btn-white">📥 Download Report</button>
+                <button class="btn btn-indigo">📧 Share Analysis</button>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    // --- Configuration and Data (Extracted from image and inferred) ---
-    const COHORT_INTERNS = [
-        {
-            name: "Ijeoma",
-            dataPrepBefore: 3, dataPrepAfter: 5, // C2, C3
-            analysisBefore: 1, analysisAfter: 1, // C4, C5
-            visualizationBefore: 1, visualizationAfter: 3, // C6, C7 (Inferred)
-            problemSolvingBefore: 3, problemSolvingAfter: 5, // Inferred for structure
-            communicationBefore: 3, communicationAfter: 4, // Inferred for structure
-            projects: 1, // C12
-            quality: "Average", // C8 (Mapped from 'None'/'Achieve this project...')
-            slack: "Rarely Active", // C9 (Mapped from 'None')
-            assignments: "None", // C10 (Mapped from 'None')
-            confidence: 5, // C13
-            mentorRating: 1, // C14
-            challenge: "Achieve this project with limited effort with guidance or some form of group peer support or mentorship (repeated for all blank text fields)",
-            achievement: "Learning the basics of data preparation.",
-            comments: "General comment: Repetition of achievement text indicates lack of specific feedback."
-        },
-        {
-            name: "Mufidah",
-            dataPrepBefore: 3, dataPrepAfter: 5,
-            analysisBefore: 5, analysisAfter: 1,
-            visualizationBefore: 1, visualizationAfter: 3,
-            problemSolvingBefore: 3, problemSolvingAfter: 5,
-            communicationBefore: 3, communicationAfter: 4,
-            projects: 1,
-            quality: "Average",
-            slack: "Rarely Active",
-            assignments: "None",
-            confidence: 5,
-            mentorRating: 1,
-            challenge: "Achieve this project with limited effort with guidance or some form of group peer support or mentorship (repeated for all blank text fields)",
-            achievement: "A focused approach to problem solving.",
-            comments: "General comment: Repetition of achievement text indicates lack of specific feedback."
-        },
-        {
-            name: "Vera",
-            dataPrepBefore: 3, dataPrepAfter: 5,
-            analysisBefore: 5, analysisAfter: 1,
-            visualizationBefore: 5, visualizationAfter: 8,
-            problemSolvingBefore: 5, problemSolvingAfter: 8, // Inferred
-            communicationBefore: 5, communicationAfter: 7, // Inferred
-            projects: 1,
-            quality: "Excellent", // Mapped from 'Completely agree/Most Valuable/Strongly Agree'
-            slack: "Somewhat Active",
-            assignments: "Most (75%)",
-            confidence: 8,
-            mentorRating: 7,
-            challenge: "Lacked proper communication, took some time and effort to deliver the final task",
-            achievement: "The final project was a success.", // Inferred from the last column text
-            comments: "Good Experience"
-        },
-        {
-            name: "Abosede",
-            dataPrepBefore: 1, dataPrepAfter: 5,
-            analysisBefore: 5, analysisAfter: 1,
-            visualizationBefore: 4, visualizationAfter: 7,
-            problemSolvingBefore: 4, problemSolvingAfter: 6, // Inferred
-            communicationBefore: 4, communicationAfter: 6, // Inferred
-            projects: 1,
-            quality: "Good", // Mapped from 'Somewhat agree/Slightly Valuable/Neutral'
-            slack: "Active",
-            assignments: "Most (75%)",
-            confidence: 5,
-            mentorRating: 8,
-            challenge: "Achieve this project with limited effort with guidance or some form of group peer support or mentorship",
-            achievement: "Successful completion of multiple tasks.", // Inferred
-            comments: "Glad to have part of it. However, the expectations were way too high for a 6 weeks internship. Would have been better to pick one project and focus on it instead of having many. Mentors should have better sense of constructive criticism to motivate learners and not demoralize."
-        },
-        {
-            name: "Abosede Jibrin",
-            dataPrepBefore: 1, dataPrepAfter: 5,
-            analysisBefore: 5, analysisAfter: 1,
-            visualizationBefore: 2, visualizationAfter: 4,
-            problemSolvingBefore: 2, problemSolvingAfter: 4, // Inferred
-            communicationBefore: 2, communicationAfter: 4, // Inferred
-            projects: 1,
-            quality: "Average", // Mapped from 'Relatively weak/Somewhat agree'
-            slack: "Active", // C9 (was 'Average', assuming 'Active' for consistency with options)
-            assignments: "All (100%)", // C10 (was '100%')
-            confidence: 4,
-            mentorRating: 7,
-            challenge: "Strongly disagree (lenger)", // Using the text as the challenge
-            achievement: "Ability to complete all assignments.", // Inferred
-            comments: "Achieve this project with limited effort with guidance or some form of group peer support or mentorship"
-        },
-        {
-            name: "Khalil",
-            dataPrepBefore: 1, dataPrepAfter: 4,
-            analysisBefore: 4, analysisAfter: 1,
-            visualizationBefore: 3, visualizationAfter: 6,
-            problemSolvingBefore: 3, problemSolvingAfter: 6, // Inferred
-            communicationBefore: 3, communicationAfter: 6, // Inferred
-            projects: 1,
-            quality: "Good", // Mapped from 'Slightly disagree' (Assuming better than 'Average' due to 100% assignments)
-            slack: "Rarely Active",
-            assignments: "All (100%)",
-            confidence: 8,
-            mentorRating: 6,
-            challenge: "Nil",
-            achievement: "Mastering visualization tools.", // Inferred
-            comments: "Good Experience/Great opportunity, but it was too fast"
-        }
-    ];
-
-    const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
-    
-    // Global variable to hold calculated statistics and chart instances
-    let globalStats = {};
-    let chartInstances = {};
-    let activeTab = 'overview';
-
-    // --- Core Logic Functions ---
-
-    // Function to calculate all statistics from the raw data
-    function calculateStats() {
-        const total = COHORT_INTERNS.length;
-
-        // Utility to calculate average and filter nulls
-        const calcAvg = (field) => {
-            const values = COHORT_INTERNS.map(i => i[field]).filter(v => v !== null && typeof v === 'number');
-            return values.length > 0 ? (values.reduce((a, b) => a + b, 0) / values.length) : 0;
-        };
-        
-        // Function to calculate percentage improvement
-        const calcImprovement = (beforeAvg, afterAvg) => {
-            if (beforeAvg === 0) return afterAvg > 0 ? 100 : 0;
-            return ((afterAvg - beforeAvg) / beforeAvg * 100);
-        };
-
-        const dpBeforeAvg = calcAvg('dataPrepBefore');
-        const dpAfterAvg = calcAvg('dataPrepAfter');
-        const anBeforeAvg = calcAvg('analysisBefore');
-        const anAfterAvg = calcAvg('analysisAfter');
-        const vzBeforeAvg = calcAvg('visualizationBefore');
-        const vzAfterAvg = calcAvg('visualizationAfter');
-        const psBeforeAvg = calcAvg('problemSolvingBefore');
-        const psAfterAvg = calcAvg('problemSolvingAfter');
-        const commBeforeAvg = calcAvg('communicationBefore');
-        const commAfterAvg = calcAvg('communicationAfter');
-
-        const stats = {
-            total,
-            dataPrepBeforeAvg: dpBeforeAvg.toFixed(2),
-            dataPrepAfterAvg: dpAfterAvg.toFixed(2),
-            analysisBeforeAvg: anBeforeAvg.toFixed(2),
-            analysisAfterAvg: anAfterAvg.toFixed(2),
-            visualizationBeforeAvg: vzBeforeAvg.toFixed(2),
-            visualizationAfterAvg: vzAfterAvg.toFixed(2),
-            problemSolvingBeforeAvg: psBeforeAvg.toFixed(2),
-            problemSolvingAfterAvg: psAfterAvg.toFixed(2),
-            communicationBeforeAvg: commBeforeAvg.toFixed(2),
-            communicationAfterAvg: commAfterAvg.toFixed(2),
-        };
-        
-        stats.dataPrepImprovement = calcImprovement(dpBeforeAvg, dpAfterAvg).toFixed(1);
-        stats.analysisImprovement = calcImprovement(anBeforeAvg, anAfterAvg).toFixed(1);
-        stats.visualizationImprovement = calcImprovement(vzBeforeAvg, vzAfterAvg).toFixed(1);
-        stats.problemSolvingImprovement = calcImprovement(psBeforeAvg, psAfterAvg).toFixed(1);
-        stats.communicationImprovement = calcImprovement(commBeforeAvg, commAfterAvg).toFixed(1);
-
-        stats.avgProjects = calcAvg('projects').toFixed(2);
-        // Using a threshold of 2 or more projects as "High Performers"
-        stats.highPerformers = COHORT_INTERNS.filter(i => i.projects >= 2).length; 
-        
-        stats.avgConfidence = calcAvg('confidence').toFixed(2);
-        stats.avgMentorRating = calcAvg('mentorRating').toFixed(2);
-
-        // Categorical Distributions
-        stats.qualityDist = {
-            "Excellent": COHORT_INTERNS.filter(i => i.quality === "Excellent").length,
-            "Good": COHORT_INTERNS.filter(i => i.quality === "Good").length,
-            "Average": COHORT_INTERNS.filter(i => i.quality === "Average").length,
-        };
-
-        stats.slackDist = {
-            "Very active": COHORT_INTERNS.filter(i => i.slack === "Very active").length,
-            "Active": COHORT_INTERNS.filter(i => i.slack === "Active").length,
-            "Somewhat Active": COHORT_INTERNS.filter(i => i.slack === "Somewhat Active").length,
-            "Rarely Active": COHORT_INTERNS.filter(i => i.slack === "Rarely Active").length,
-        };
-
-        stats.assignmentDist = {
-            "All (100%)": COHORT_INTERNS.filter(i => i.assignments === "All (100%)").length,
-            "Most (75%)": COHORT_INTERNS.filter(i => i.assignments === "Most (75%)").length,
-            "Some (50%)": COHORT_INTERNS.filter(i => i.assignments === "Some (50%)").length,
-            "None": COHORT_INTERNS.filter(i => i.assignments === "None").length,
-        };
-        
-        stats.feedbackSummary = {
-            challenges: COHORT_INTERNS
-                .filter(i => i.challenge && i.challenge.trim() !== "" && i.challenge.toLowerCase() !== "nil")
-                .map(i => `• ${i.name}: ${i.challenge}`),
-            achievements: COHORT_INTERNS
-                .filter(i => i.achievement && i.achievement.trim() !== "")
-                .map(i => `• ${i.name}: ${i.achievement}`),
-            comments: COHORT_INTERNS
-                .filter(i => i.comments && i.comments.trim() !== "")
-                .map(i => `• ${i.name}: ${i.comments}`)
-        };
-
-        return stats;
-    }
-
-    // --- DOM Rendering Functions ---
-
-    function renderHeaderStats(stats) {
-        const container = document.getElementById('header-stats');
-        container.innerHTML = `
-            <div class="bg-indigo-50 px-4 py-2 rounded-lg">
-                <span class="text-sm text-indigo-600 font-semibold">Total Interns: ${stats.total}</span>
-            </div>
-            <div class="bg-green-50 px-4 py-2 rounded-lg">
-                <span class="text-sm text-green-600 font-semibold">Avg Projects: ${stats.avgProjects}</span>
-            </div>
-            <div class="bg-purple-50 px-4 py-2 rounded-lg">
-                <span class="text-sm text-purple-600 font-semibold">High Performers (2+ projects): ${stats.highPerformers}</span>
-            </div>
-        `;
-    }
-
-    // --- Overview Tab Rendering ---
-    
-    function renderOverviewMetrics(stats) {
-        const container = document.getElementById('key-metrics');
-        // Swapping out the 4 existing skills for new ones
-        container.innerHTML = `
-            ${renderMetricCard('Data Prep Proficiency', stats.dataPrepAfterAvg, stats.dataPrepImprovement, 'indigo')}
-            ${renderMetricCard('Analysis Proficiency', stats.analysisAfterAvg, stats.analysisImprovement, 'blue')}
-            ${renderMetricCard('Visualization Proficiency', stats.visualizationAfterAvg, stats.visualizationImprovement, 'purple')}
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <h3 class="text-sm font-semibold text-gray-600 mb-2">Avg Confidence</h3>
-                <div class="text-3xl font-bold text-green-600">${stats.avgConfidence}/10</div>
-                <div class="text-sm mt-2 text-gray-600">
-                    Mentor Rating: ${stats.avgMentorRating}/10
-                </div>
-            </div>
-        `;
-
-        function renderMetricCard(title, value, improvement, color) {
-            const isPositive = parseFloat(improvement) >= 0;
-            const sign = isPositive ? '+' : '';
-            const textColor = isPositive ? 'text-green-600' : 'text-red-600';
-
-            return `
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-sm font-semibold text-gray-600 mb-2">${title}</h3>
-                    <div class="text-3xl font-bold text-${color}-600">${value}/10</div>
-                    <div class="text-sm mt-2 ${textColor}">
-                        ${sign}${improvement}% change
-                    </div>
-                </div>
-            `;
-        }
-    }
-
-    function renderSkillsComparisonChart(stats) {
-        const data = [
-            { skill: 'Data Prep', Before: parseFloat(stats.dataPrepBeforeAvg), After: parseFloat(stats.dataPrepAfterAvg) },
-            { skill: 'Analysis', Before: parseFloat(stats.analysisBeforeAvg), After: parseFloat(stats.analysisAfterAvg) },
-            { skill: 'Visualization', Before: parseFloat(stats.visualizationBeforeAvg), After: parseFloat(stats.visualizationAfterAvg) },
-            { skill: 'P. Solving', Before: parseFloat(stats.problemSolvingBeforeAvg), After: parseFloat(stats.problemSolvingAfterAvg) },
-            { skill: 'Communication', Before: parseFloat(stats.communicationBeforeAvg), After: parseFloat(stats.communicationAfterAvg) },
+    <script>
+        // Cohort Data
+        const cohortData = [
+            {
+                name: "Gideon Pam Gwom",
+                excelBefore: 7, excelAfter: 8,
+                sqlBefore: 5, sqlAfter: 7,
+                pbiBefore: 6, pbiAfter: 8,
+                analysisBefore: 6, analysisAfter: 8,
+                commBefore: 5, commAfter: 7,
+                projects: 2,
+                sunfi: "Yes",
+                quality: "Good",
+                slack: "Active",
+                assignments: "Most (75%)",
+                confidence: 7,
+                mentorRating: 8,
+                challenge: "Time management and balancing multiple tasks",
+                achievement: "Successfully completed data visualization projects",
+                comments: "Great learning experience with practical applications"
+            },
+            {
+                name: "Thato Maelane",
+                excelBefore: 6, excelAfter: 8,
+                sqlBefore: 4, sqlAfter: 7,
+                pbiBefore: 5, pbiAfter: 8,
+                analysisBefore: 5, analysisAfter: 7,
+                commBefore: 4, commAfter: 6,
+                projects: 2,
+                sunfi: "Yes",
+                quality: "Good",
+                slack: "Active",
+                assignments: "Most (75%)",
+                confidence: 7,
+                mentorRating: 8,
+                challenge: "Learning new tools quickly",
+                achievement: "Built comprehensive dashboards",
+                comments: "Challenging but rewarding program"
+            },
+            {
+                name: "Thato",
+                excelBefore: 8, excelAfter: 9,
+                sqlBefore: 6, sqlAfter: 8,
+                pbiBefore: 7, pbiAfter: 9,
+                analysisBefore: 7, analysisAfter: 9,
+                commBefore: 6, commAfter: 8,
+                projects: 3,
+                sunfi: "Yes",
+                quality: "Excellent",
+                slack: "Very Active",
+                assignments: "All (100%)",
+                confidence: 8,
+                mentorRating: 9,
+                challenge: "Managing complex datasets",
+                achievement: "Completed all projects with high quality",
+                comments: "Excellent mentorship and learning environment"
+            },
+            {
+                name: "Musonda Musunga",
+                excelBefore: 5, excelAfter: 7,
+                sqlBefore: 3, sqlAfter: 6,
+                pbiBefore: 4, pbiAfter: 7,
+                analysisBefore: 4, analysisAfter: 6,
+                commBefore: 3, commAfter: 6,
+                projects: 2,
+                sunfi: "No",
+                quality: "Good",
+                slack: "Active",
+                assignments: "Some (50%)",
+                confidence: 6,
+                mentorRating: 7,
+                challenge: "Understanding advanced SQL queries",
+                achievement: "Significant improvement in data analysis skills",
+                comments: "Would benefit from more hands-on practice sessions"
+            },
+            {
+                name: "Julie Grace Irene PONDI",
+                excelBefore: 7, excelAfter: 9,
+                sqlBefore: 5, sqlAfter: 8,
+                pbiBefore: 6, pbiAfter: 8,
+                analysisBefore: 6, analysisAfter: 8,
+                commBefore: 5, commAfter: 7,
+                projects: 3,
+                sunfi: "Yes",
+                quality: "Excellent",
+                slack: "Very Active",
+                assignments: "All (100%)",
+                confidence: 8,
+                mentorRating: 9,
+                challenge: "Collaboration across time zones",
+                achievement: "Delivered high-quality analytical reports",
+                comments: "Outstanding program with excellent support"
+            },
+            {
+                name: "Mustaf Ali",
+                excelBefore: 6, excelAfter: 8,
+                sqlBefore: 4, sqlAfter: 7,
+                pbiBefore: 5, pbiAfter: 7,
+                analysisBefore: 5, analysisAfter: 7,
+                commBefore: 4, commAfter: 6,
+                projects: 2,
+                sunfi: "No",
+                quality: "Good",
+                slack: "Active",
+                assignments: "Most (75%)",
+                confidence: 7,
+                mentorRating: 8,
+                challenge: "Power BI visualization techniques",
+                achievement: "Created interactive dashboards",
+                comments: "Good program, learned valuable skills"
+            }
         ];
 
-        const ctx = document.getElementById('skillComparisonChart').getContext('2d');
-        if (chartInstances.skillComparison) chartInstances.skillComparison.destroy();
+        // Tab Switching
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
 
-        chartInstances.skillComparison = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.map(d => d.skill),
-                datasets: [
-                    {
+        // Initialize Charts
+        function initCharts() {
+            // Skills Comparison Chart
+            const skillsCtx = document.getElementById('skillsChart').getContext('2d');
+            new Chart(skillsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Excel', 'SQL', 'Power BI', 'Analysis', 'Communication'],
+                    datasets: [{
                         label: 'Before',
-                        data: data.map(d => d.Before),
-                        backgroundColor: '#94a3b8', // Tailwind gray-400
-                        borderRadius: 4,
-                    },
-                    {
+                        data: [6.92, 4.50, 5.50, 5.50, 4.50],
+                        backgroundColor: '#94a3b8'
+                    }, {
                         label: 'After',
-                        data: data.map(d => d.After),
-                        backgroundColor: '#3b82f6', // Tailwind blue-500
-                        borderRadius: 4,
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 10,
-                        title: { display: true, text: 'Rating (0-10)' }
-                    }
-                }
-            }
-        });
-    }
-
-    function renderImprovementChart(stats) {
-        const data = [
-            { skill: 'Data Prep', improvement: parseFloat(stats.dataPrepImprovement) },
-            { skill: 'Analysis', improvement: parseFloat(stats.analysisImprovement) },
-            { skill: 'Visualization', improvement: parseFloat(stats.visualizationImprovement) },
-            { skill: 'P. Solving', improvement: parseFloat(stats.problemSolvingImprovement) },
-            { skill: 'Communication', improvement: parseFloat(stats.communicationImprovement) },
-        ];
-
-        const ctx = document.getElementById('improvementChart').getContext('2d');
-        if (chartInstances.improvement) chartInstances.improvement.destroy();
-
-        chartInstances.improvement = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.map(d => d.skill),
-                datasets: [
-                    {
-                        label: 'Improvement Percentage',
-                        data: data.map(d => d.improvement),
-                        backgroundColor: (context) => {
-                            const value = context.parsed.y;
-                            return value >= 0 ? '#10b981' : '#ef4444'; // green-500 or red-500
-                        },
-                        borderRadius: 4,
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => `${context.dataset.label}: ${context.parsed.y}%`
-                        }
-                    }
+                        data: [8.17, 7.17, 7.83, 7.50, 6.67],
+                        backgroundColor: '#3b82f6'
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        title: { display: true, text: 'Percentage Improvement (%)' }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 10 }
                     }
                 }
-            }
-        });
-    }
+            });
 
-    function renderOverviewTab(stats) {
-        renderOverviewMetrics(stats);
-        renderSkillsComparisonChart(stats);
-        renderImprovementChart(stats);
-    }
+            // Improvement Chart
+            const improvementCtx = document.getElementById('improvementChart').getContext('2d');
+            new Chart(improvementCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Excel', 'SQL', 'Power BI', 'Analysis', 'Communication'],
+                    datasets: [{
+                        label: 'Improvement %',
+                        data: [17.9, 55.4, 41.8, 36.4, 34.1],
+                        backgroundColor: '#10b981'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
 
-    // --- Numerical Tab Rendering ---
+            // SunFi Participation Pie Chart
+            const sunfiCtx = document.getElementById('sunfiChart').getContext('2d');
+            new Chart(sunfiCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Participated', 'Did Not Participate'],
+                    datasets: [{
+                        data: [4, 2],
+                        backgroundColor: ['#10b981', '#3b82f6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
 
-    function renderNumericalTable(interns) {
-        const tbody = document.getElementById('skills-table-body');
-        tbody.innerHTML = interns.map((intern, idx) => {
-            const fields = ['dataPrep', 'analysis', 'visualization', 'problemSolving', 'communication'];
-            let rowHtml = `<tr class="hover:bg-gray-50 border-b border-gray-100">`;
-            rowHtml += `<td class="px-4 py-3 font-medium text-gray-900">${intern.name}</td>`;
+            // Quality Distribution Pie Chart
+            const qualityCtx = document.getElementById('qualityChart').getContext('2d');
+            new Chart(qualityCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Excellent', 'Good'],
+                    datasets: [{
+                        data: [2, 4],
+                        backgroundColor: ['#10b981', '#3b82f6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
 
-            fields.forEach(f => {
-                const before = intern[`${f}Before`];
-                const after = intern[`${f}After`];
-                const change = after - before;
-                const changeSign = change >= 0 ? '+' : '';
-                const changeColor = change >= 0 ? 'text-green-600' : 'text-red-600';
+            // Slack Engagement Bar Chart
+            const slackCtx = document.getElementById('slackChart').getContext('2d');
+            new Chart(slackCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Very Active', 'Active'],
+                    datasets: [{
+                        label: 'Participants',
+                        data: [2, 4],
+                        backgroundColor: '#3b82f6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Assignment Submission Bar Chart
+            const assignmentCtx = document.getElementById('assignmentChart').getContext('2d');
+            new Chart(assignmentCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['All (100%)', 'Most (75%)', 'Some (50%)'],
+                    datasets: [{
+                        label: 'Participants',
+                        data: [2, 3, 1],
+                        backgroundColor: '#10b981'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Populate Numerical Table
+        function populateNumericalTable() {
+            const tbody = document.getElementById('numericalTable');
+            let html = '';
+            
+            cohortData.forEach(p => {
+                const excelChange = p.excelAfter - p.excelBefore;
+                const sqlChange = p.sqlAfter - p.sqlBefore;
+                const pbiChange = p.pbiAfter - p.pbiBefore;
+                const analysisChange = p.analysisAfter - p.analysisBefore;
+                const commChange = p.commAfter - p.commBefore;
                 
-                rowHtml += `
-                    <td class="px-4 py-3 text-center">
-                        <span class="${changeColor}">
-                            ${before}→${after} (${changeSign}${change})
-                        </span>
-                    </td>
+                html += `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td class="text-center" style="color: #16a34a;">${p.excelBefore}→${p.excelAfter} (+${excelChange})</td>
+                        <td class="text-center" style="color: #16a34a;">${p.sqlBefore}→${p.sqlAfter} (+${sqlChange})</td>
+                        <td class="text-center" style="color: #16a34a;">${p.pbiBefore}→${p.pbiAfter} (+${pbiChange})</td>
+                        <td class="text-center" style="color: #16a34a;">${p.analysisBefore}→${p.analysisAfter} (+${analysisChange})</td>
+                        <td class="text-center" style="color: #16a34a;">${p.commBefore}→${p.commAfter} (+${commChange})</td>
+                        <td class="text-center">
+                            <span class="project-badge ${p.projects >= 3 ? 'badge-green-bg' : 'badge-blue-bg'}">
+                                ${p.projects}
+                            </span>
+                        </td>
+                    </tr>
                 `;
             });
-
-            // Using 2+ projects as the high threshold since the new data only shows '1' project for all.
-            const projectBg = intern.projects >= 2 ? 'bg-green-100 text-green-800' :
-                              intern.projects >= 1 ? 'bg-blue-100 text-blue-800' :
-                              'bg-yellow-100 text-yellow-800';
-
-            rowHtml += `
-                <td class="px-4 py-3 text-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${projectBg}">
-                        ${intern.projects}
-                    </span>
-                </td>
-                <td class="px-4 py-3 text-center font-semibold">
-                    ${intern.confidence || 'N/A'}
-                </td>
-            </tr>`;
-            return rowHtml;
-        }).join('');
-    }
-
-    function renderNumericalSummary(stats) {
-        const container = document.getElementById('summary-stats-grid');
-        const summaryData = [
-            { title: 'Data Prep Avg Growth', value: stats.dataPrepImprovement, before: stats.dataPrepBeforeAvg, after: stats.dataPrepAfterAvg, color: 'blue' },
-            { title: 'Analysis Avg Growth', value: stats.analysisImprovement, before: stats.analysisBeforeAvg, after: stats.analysisAfterAvg, color: 'indigo' },
-            { title: 'Visualization Avg Growth', value: stats.visualizationImprovement, before: stats.visualizationBeforeAvg, after: stats.visualizationAfterAvg, color: 'purple' },
-            { title: 'P. Solving Avg Growth', value: stats.problemSolvingImprovement, before: stats.problemSolvingBeforeAvg, after: stats.problemSolvingAfterAvg, color: 'green' },
-            { title: 'Communication Growth', value: stats.communicationImprovement, before: stats.communicationBeforeAvg, after: stats.communicationAfterAvg, color: 'amber' },
-            { title: 'Avg Confidence', value: `${stats.avgConfidence}/10`, before: 'Job readiness perception', after: '', color: 'pink' },
-        ];
-
-        container.innerHTML = summaryData.map(item => `
-            <div class="bg-${item.color}-50 rounded-lg p-4 transition duration-300 hover:shadow-md">
-                <div class="text-sm text-${item.color}-600 font-semibold mb-1">${item.title}</div>
-                <div class="text-2xl font-bold text-${item.color}-900">${item.value}${item.title.includes('Growth') ? '%' : ''}</div>
-                <div class="text-xs text-${item.color}-600">
-                    ${item.after ? `${item.before} → ${item.after}` : item.before}
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function renderNumericalTab(stats) {
-        renderNumericalTable(COHORT_INTERNS);
-        renderNumericalSummary(stats);
-    }
-
-    // --- Categorical Tab Rendering ---
-
-    function renderPieChart(elementId, title, labels, data, colors) {
-        const ctx = document.getElementById(elementId).getContext('2d');
-        if (chartInstances[elementId]) chartInstances[elementId].destroy();
-
-        chartInstances[elementId] = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: title,
-                    data: data,
-                    backgroundColor: colors,
-                    hoverOffset: 10,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => {
-                                const label = context.label || '';
-                                const value = context.raw;
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percent = ((value / total) * 100).toFixed(0);
-                                return `${label}: ${value} (${percent}%)`;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    function renderBarChart(elementId, title, labels, data, color) {
-        const ctx = document.getElementById(elementId).getContext('2d');
-        if (chartInstances[elementId]) chartInstances[elementId].destroy();
-
-        chartInstances[elementId] = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Number of Interns',
-                        data: data,
-                        backgroundColor: color,
-                        borderRadius: 6,
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    title: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        precision: 0,
-                        ticks: { stepSize: 1 }
-                    }
-                }
-            }
-        });
-    }
-
-    function renderCategoricalCharts(stats) {
-        // Project Value Perception Pie Chart (uses the 'qualityDist' from new data)
-        const qualityLabels = Object.keys(stats.qualityDist);
-        const qualityData = Object.values(stats.qualityDist);
-        renderPieChart('qualityPieChart', 'Project Value Perception', qualityLabels, qualityData, [COLORS[0], COLORS[1], COLORS[2]]);
-
-        // Slack Bar Chart
-        const slackLabels = Object.keys(stats.slackDist);
-        const slackData = Object.values(stats.slackDist);
-        renderBarChart('slackBarChart', 'Slack Engagement Levels', slackLabels, slackData, COLORS[1]);
-
-        // Assignment Bar Chart
-        const assignmentLabels = Object.keys(stats.assignmentDist);
-        const assignmentData = Object.values(stats.assignmentDist);
-        renderBarChart('assignmentBarChart', 'Assignment Submission Rates', assignmentLabels, assignmentData, COLORS[0]);
-
-        // Categorical Table
-        const tbody = document.getElementById('categorical-table-body');
-        tbody.innerHTML = COHORT_INTERNS.map((intern, idx) => {
-            const qualityBg = intern.quality === "Excellent" ? 'bg-green-100 text-green-800' :
-                              intern.quality === "Good" ? 'bg-blue-100 text-blue-800' :
-                              'bg-yellow-100 text-yellow-800';
             
-            return `
-                <tr class="hover:bg-gray-50 border-b border-gray-100">
-                    <td class="px-4 py-3 font-medium text-gray-900">${intern.name}</td>
-                    <td class="px-4 py-3 text-center">
-                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${qualityBg}">
-                            ${intern.quality}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3 text-center text-gray-700">${intern.slack}</td>
-                    <td class="px-4 py-3 text-center text-gray-700">${intern.assignments}</td>
-                    <td class="px-4 py-3 text-center font-semibold">${intern.mentorRating || 'N/A'}</td>
-                </tr>
-            `;
-        }).join('');
-    }
+            tbody.innerHTML = html;
+        }
 
-    function renderCategoricalTab(stats) {
-        renderCategoricalCharts(stats);
-    }
-
-    // --- Feedback Tab Rendering ---
-
-    function renderFeedbackList(listId, items) {
-        const list = document.getElementById(listId);
-        list.innerHTML = items.map(item => `<li class="text-sm text-gray-700 leading-relaxed p-2 border-l-4 border-gray-200">${item.replace('• ', '').trim()}</li>`).join('');
-    }
-
-    function renderFeedbackTab(stats) {
-        renderFeedbackList('challenges-list', stats.feedbackSummary.challenges);
-        renderFeedbackList('achievements-list', stats.feedbackSummary.achievements);
-        renderFeedbackList('comments-list', stats.feedbackSummary.comments);
-    }
-
-
-    // --- Tab Switching and Main App Controller ---
-
-    function switchTab(tabName) {
-        // Update active tab state
-        activeTab = tabName;
-
-        // Update button styles
-        document.querySelectorAll('.tab-button').forEach(button => {
-            const isCurrent = button.getAttribute('data-tab') === tabName;
-            button.classList.toggle('border-indigo-600', isCurrent);
-            button.classList.toggle('text-indigo-600', isCurrent);
-            button.classList.toggle('text-gray-600', !isCurrent);
-            button.classList.toggle('hover:text-gray-900', !isCurrent);
-            button.classList.toggle('hover:border-b-2', !isCurrent);
-            button.classList.toggle('hover:border-gray-200', !isCurrent);
-            button.classList.toggle('border-b-2', isCurrent);
-        });
-
-        // Hide all content and show the active one
-        document.querySelectorAll('[data-tab-content]').forEach(content => {
-            if (content.id === tabName) {
-                content.classList.remove('hidden');
-                // Re-render charts when switching to ensure they resize correctly
-                if (tabName === 'overview') {
-                    renderOverviewTab(globalStats);
-                } else if (tabName === 'categorical') {
-                    renderCategoricalTab(globalStats);
-                }
-            } else {
-                content.classList.add('hidden');
-            }
-        });
-    }
-
-    function initEventListeners() {
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', (e) => {
-                switchTab(e.target.getAttribute('data-tab'));
+        // Populate Categorical Table
+        function populateCategoricalTable() {
+            const tbody = document.getElementById('categoricalTable');
+            let html = '';
+            
+            cohortData.forEach(p => {
+                html += `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td class="text-center">
+                            <span class="status-badge ${p.sunfi === 'Yes' ? 'status-yes' : 'status-no'}">
+                                ${p.sunfi}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="status-badge ${p.quality === 'Excellent' ? 'status-excellent' : 'status-good'}">
+                                ${p.quality}
+                            </span>
+                        </td>
+                        <td class="text-center">${p.slack}</td>
+                        <td class="text-center">${p.assignments}</td>
+                        <td class="text-center" style="color: #4f46e5; font-weight: 600;">
+                            ${p.mentorRating}/10
+                        </td>
+                    </tr>
+                `;
             });
+            
+            tbody.innerHTML = html;
+        }
+
+        // Populate Feedback Lists
+        function populateFeedback() {
+            // Challenges
+            const challengesList = document.getElementById('challengesList');
+            let challengesHtml = '';
+            cohortData.forEach(p => {
+                if (p.challenge) {
+                    challengesHtml += `
+                        <div class="feedback-item bg-red-50">
+                            <div class="feedback-item-name">${p.name}</div>
+                            <div class="feedback-item-text">${p.challenge}</div>
+                        </div>
+                    `;
+                }
+            });
+            challengesList.innerHTML = challengesHtml;
+
+            // Achievements
+            const achievementsList = document.getElementById('achievementsList');
+            let achievementsHtml = '';
+            cohortData.forEach(p => {
+                if (p.achievement) {
+                    achievementsHtml += `
+                        <div class="feedback-item bg-green-50">
+                            <div class="feedback-item-name">${p.name}</div>
+                            <div class="feedback-item-text">${p.achievement}</div>
+                        </div>
+                    `;
+                }
+            });
+            achievementsList.innerHTML = achievementsHtml;
+
+            // Comments
+            const commentsList = document.getElementById('commentsList');
+            let commentsHtml = '';
+            cohortData.forEach(p => {
+                if (p.comments) {
+                    commentsHtml += `
+                        <div class="feedback-item bg-blue-50">
+                            <div class="feedback-item-name">${p.name}</div>
+                            <div class="feedback-item-text">${p.comments}</div>
+                        </div>
+                    `;
+                }
+            });
+            commentsList.innerHTML = commentsHtml;
+        }
+
+        // Initialize everything on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            populateNumericalTable();
+            populateCategoricalTable();
+            populateFeedback();
         });
-
-        // Handle window resize for Chart.js responsiveness (Chart.js handles this internally, but it's good practice to ensure DOM elements are properly sized)
-        window.addEventListener('resize', () => {
-            if (activeTab === 'overview') {
-                renderOverviewTab(globalStats);
-            } else if (activeTab === 'categorical') {
-                renderCategoricalTab(globalStats);
-            }
-        });
-    }
-
-    function initApp() {
-        // 1. Calculate all necessary statistics once
-        globalStats = calculateStats();
-
-        // 2. Render initial static data (Header)
-        renderHeaderStats(globalStats);
-        
-        // 3. Render all tabs initially (only the active one will be visible)
-        // Note: Charts are rendered here to ensure they are drawn when the DOM is ready.
-        renderOverviewTab(globalStats);
-        renderNumericalTab(globalStats);
-        renderCategoricalTab(globalStats);
-        renderFeedbackTab(globalStats);
-
-        // 4. Set the initial active tab (Overview is set by default in HTML, but this confirms it)
-        switchTab('overview');
-
-        // 5. Setup event listeners
-        initEventListeners();
-    }
-
-    // Initialize the application when the window loads
-    window.onload = initApp;
-
-</script>
-
+    </script>
 </body>
 </html>

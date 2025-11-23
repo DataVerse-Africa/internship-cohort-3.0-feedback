@@ -1,0 +1,50 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(76, 117, 219);
+}
+
+body h1{
+    display: flex;
+    color: white;
+    justify-content: center;
+    margin-top: 30px
+}
+
+.container{
+    width: 1100px;
+    margin: 0 auto; /* this is how to centralize contents*/
+    display: flex;
+    padding: 0 auto;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    
+}
+
+.track{
+    background-color: #f4eeee;
+    width: 250px;
+    margin-right: 20px;
+    margin-top: 200px;
+    display: flex;
+    flex-wrap: wrap;
+    height: 150px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.6)
+    
+}
+
+.track a{
+    text-decoration: none;
+}
+
+.track a:hover{
+    color: gray;
+}
